@@ -61,7 +61,15 @@ export function AccountView() {
 
       <ChangePassword />
 
-      <p className="mt-8 text-center text-sm text-muted">
+      <p className="mt-8 flex flex-wrap justify-center gap-4 text-sm">
+        <Link href="/agency" className="text-accent">
+          এজেন্সি
+        </Link>
+        {user.is_superadmin && (
+          <Link href="/admin/agencies" className="text-accent">
+            এজেন্সি অনুমোদন (admin)
+          </Link>
+        )}
         <Link href="/" className="text-accent">
           হোম
         </Link>

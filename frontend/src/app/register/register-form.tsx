@@ -1,12 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button, Field, Notice } from "@/components/ui";
 import { ApiError, post, type User } from "@/lib/api";
+import { safeNext } from "@/lib/orgs";
 
 export function RegisterForm() {
   const router = useRouter();
+  const next = safeNext(useSearchParams().get("next"), "/account?welcome=1");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -26,7 +28,7 @@ export function RegisterForm() {
         email: String(form.get("email")).trim(),
         password,
       });
-      router.push("/account?welcome=1");
+      router.push(next);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "কিছু একটা সমস্যা হয়েছে।");
       setBusy(false);
@@ -34,7 +36,7 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate={false}>
+    <form onSubmit={onSubmit}>
       {error && <Notice tone="error">{error}</Notice>}
       <Field label="পূর্ণ নাম" name="full_name" autoComplete="name" required minLength={2} maxLength={120} />
       <Field label="ইমেইল" name="email" type="email" autoComplete="email" required maxLength={254} />

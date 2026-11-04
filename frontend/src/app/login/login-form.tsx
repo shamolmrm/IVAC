@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button, Field, Notice } from "@/components/ui";
 import { ApiError, post, type User } from "@/lib/api";
+import { safeNext } from "@/lib/orgs";
 
 export function LoginForm() {
   const router = useRouter();
+  const next = safeNext(useSearchParams().get("next"));
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -21,7 +23,7 @@ export function LoginForm() {
         email: String(form.get("email")).trim(),
         password: String(form.get("password")),
       });
-      router.push("/account");
+      router.push(next);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "কিছু একটা সমস্যা হয়েছে।");
       setBusy(false);

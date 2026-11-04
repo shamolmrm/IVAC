@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { AuthShell } from "@/components/ui";
 import { RegisterForm } from "./register-form";
 
@@ -18,7 +19,9 @@ export default function RegisterPage() {
         </>
       }
     >
-      <RegisterForm />
+      <Suspense>
+        <RegisterForm />
+      </Suspense>
     </AuthShell>
   );
 }

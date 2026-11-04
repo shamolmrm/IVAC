@@ -49,7 +49,7 @@ Shared VPS (4 vCPU / 7.8 GB, already hosting other apps). Phase 1 adds container
 1. ✅ Monorepo skeleton: Next.js frontend, FastAPI backend, Postgres, Redis, Alembic, CI tests in deploy (2026-11-04)
 2. ✅ Auth: register/login, email verification, password reset/change, sessions, account lockout, audit log (2026-11-04; email sending waits for SMTP settings)
 3. ✅ Mobile OTP verification: BD number check, hashed 6-digit codes, 5-min expiry, 5 attempts, resend throttle, one account per number (2026-11-04; sending waits for an SMS provider adapter)
-4. Organizations, staff invites and roles; tenant isolation tests
+4. ✅ Organizations: agencies (pending → super admin approval), Owner/Manager/Agent roles, invite links, member management, built-in Direct org, tenant isolation (404 for non-members) + tests (2026-11-04)
 5. Applicant profile + duplicate detection
 6. Encrypted document upload + checklist
 7. Passport MRZ OCR + validation
