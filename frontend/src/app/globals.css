@@ -1,13 +1,20 @@
 @import "tailwindcss";
 
-/* Visa Assistant design tokens. Light by default; dark via prefers-color-scheme. */
+/* Visa Assistant design tokens. Light by default; dark via prefers-color-scheme.
+   Palette: deep teal (trust) + warm saffron (India travel warmth). Not any official branding. */
 :root {
   --bg: #f7f8fa;
   --bg-elevated: #ffffff;
+  --bg-sunken: #eef1f5;
   --fg: #1d2433;
   --muted: #5b6475;
   --line: #e3e6ec;
   --accent: #0f766e;
+  --accent-soft: rgba(15, 118, 110, 0.1);
+  --saffron: #c2620a;
+  --saffron-soft: rgba(234, 136, 30, 0.12);
+  --hero-from: #0b3b3a;
+  --hero-to: #0f766e;
   color-scheme: light;
 }
 
@@ -15,10 +22,16 @@
   :root {
     --bg: #0f1218;
     --bg-elevated: #171b23;
+    --bg-sunken: #0b0e13;
     --fg: #e7eaf0;
     --muted: #9aa3b2;
     --line: #262c38;
     --accent: #2dd4bf;
+    --accent-soft: rgba(45, 212, 191, 0.12);
+    --saffron: #f5a54a;
+    --saffron-soft: rgba(245, 165, 74, 0.14);
+    --hero-from: #06201f;
+    --hero-to: #0c4f4a;
     color-scheme: dark;
   }
 }
@@ -26,14 +39,28 @@
 @theme inline {
   --color-bg: var(--bg);
   --color-bg-elevated: var(--bg-elevated);
+  --color-bg-sunken: var(--bg-sunken);
   --color-fg: var(--fg);
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-saffron: var(--saffron);
+  --color-saffron-soft: var(--saffron-soft);
   --font-sans: var(--font-inter), var(--font-bengali), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--bg);
   color: var(--fg);
+}
+
+.hero-bg {
+  background:
+    radial-gradient(60rem 30rem at 85% -10%, rgba(245, 165, 74, 0.28), transparent 60%),
+    linear-gradient(135deg, var(--hero-from), var(--hero-to));
 }
