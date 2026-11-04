@@ -46,7 +46,7 @@ Tenant isolation: every record carries `organization_id` (individual applicants 
 Shared VPS (4 vCPU / 7.8 GB, already hosting other apps). Phase 1 adds containers `ivac-web` (Next.js), `ivac-api` (FastAPI), `ivac-worker` (OCR/queue), `ivac-postgres`, `ivac-redis` — est. 1.5–2 GB RAM. A dedicated server is only needed once real load shows it.
 
 ## Task list (one at a time, each: build → test → deploy)
-1. Monorepo skeleton: Next.js frontend, FastAPI backend, Postgres, Redis, Alembic, CI tests in deploy
+1. ✅ Monorepo skeleton: Next.js frontend, FastAPI backend, Postgres, Redis, Alembic, CI tests in deploy (2026-11-04)
 2. Auth: register/login, email verification, sessions
 3. Mobile OTP verification (needs an SMS provider — decide)
 4. Organizations, staff invites and roles; tenant isolation tests

@@ -1,0 +1,26 @@
+# Local development: Postgres + Redis only. Run the API and web app directly:
+#   docker compose up -d
+#   cd backend && uvicorn app.main:app --reload      (http://localhost:8000/api/v1/docs)
+#   cd frontend && pnpm dev                           (http://localhost:3000)
+# Ports 5433/6380 avoid clashing with other local projects.
+name: ivac-dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ivac
+      POSTGRES_PASSWORD: ivac
+      POSTGRES_DB: ivac
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:6380:6379"
+
+volumes:
+  pgdata:

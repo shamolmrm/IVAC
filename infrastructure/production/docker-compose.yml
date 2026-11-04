@@ -1,17 +1,116 @@
-# Production stack on the shared VPS. Compose project: ivac.
-# Phase 0: static placeholder only. App services are added in Phase 1.
+# Visa Assistant production stack (shared Contabo VPS, behind Nginx Proxy Manager).
+# Deployed by scripts/deploy.sh. Secrets live in /home/ubuntu/docker/websites/ivac/.env
+# (generated on first deploy, never in Git).
 name: ivac
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
+  # ── Public-facing (joined to the shared proxy network) ──
   web:
-    image: nginx:1.27-alpine
+    build:
+      context: ../../frontend
+    image: ivac-web:latest
     container_name: ivac-web
     restart: unless-stopped
-    volumes:
-      - ../../site:/usr/share/nginx/html:ro
-    mem_limit: 64m
+    logging: *default-logging
+    mem_limit: 384m
+    environment:
+      INTERNAL_API_URL: http://ivac-api:8000
+    depends_on:
+      - api
     networks:
       - proxy
+
+  api:
+    build:
+      context: ../../backend
+      target: runtime
+    image: ivac-api:latest
+    container_name: ivac-api
+    restart: unless-stopped
+    logging: *default-logging
+    mem_limit: 512m
+    environment:
+      ENVIRONMENT: production
+      CORS_ORIGINS: '["https://ivac.supersoftltd.com"]'
+      PUBLIC_URL: https://ivac.supersoftltd.com
+      DATABASE_URL: postgresql+psycopg://ivac:${POSTGRES_PASSWORD:?set in .env}@ivac-postgres:5432/ivac
+      REDIS_URL: redis://:${REDIS_PASSWORD:?set in .env}@ivac-redis:6379/0
+    volumes:
+      - ../../../data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - proxy
+      - internal
+
+  # ── Internal only (ivac_internal network, no host ports) ──
+  postgres:
+    image: postgres:16-alpine
+    container_name: ivac-postgres
+    restart: unless-stopped
+    logging: *default-logging
+    mem_limit: 512m
+    shm_size: 128m
+    environment:
+      POSTGRES_USER: ivac
+      POSTGRES_DB: ivac
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ivac -d ivac"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    networks:
+      - internal
+
+  # Queue for background jobs (OCR, notifications) — persisted so queued work survives restarts
+  redis:
+    image: redis:7-alpine
+    container_name: ivac-redis
+    restart: unless-stopped
+    logging: *default-logging
+    mem_limit: 128m
+    command:
+      - redis-server
+      - --requirepass
+      - ${REDIS_PASSWORD:?set in .env}
+      - --maxmemory
+      - 100mb
+      - --maxmemory-policy
+      - noeviction
+      - --appendonly
+      - "yes"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set in .env}
+    networks:
+      - internal
+
+volumes:
+  pgdata:
+    name: ivac_pgdata
+  redisdata:
+    name: ivac_redisdata
 
 networks:
   proxy:
     external: true
+  internal:
+    name: ivac_internal

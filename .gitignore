@@ -10,3 +10,5 @@ dist/
 uploads/
 *.log
 .DS_Store
+*.tsbuildinfo
+next-env.d.ts

@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+/* Visa Assistant design tokens. Light by default; dark via prefers-color-scheme. */
+:root {
+  --bg: #f7f8fa;
+  --bg-elevated: #ffffff;
+  --fg: #1d2433;
+  --muted: #5b6475;
+  --line: #e3e6ec;
+  --accent: #0f766e;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1218;
+    --bg-elevated: #171b23;
+    --fg: #e7eaf0;
+    --muted: #9aa3b2;
+    --line: #262c38;
+    --accent: #2dd4bf;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-inter), var(--font-bengali), system-ui, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+}
