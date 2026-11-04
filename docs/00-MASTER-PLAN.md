@@ -1,6 +1,6 @@
 # Master plan
 
-Status: **Phase 1 in progress.** Phase 0 (infrastructure) done 2026-11-04; Phase 1 task 1 (skeleton) done 2026-11-04.
+Status: **Phase 1 in progress.** Phase 0 (infrastructure) done 2026-11-04; Phase 1 tasks 1 (skeleton) and 2 (auth) done 2026-11-04.
 
 ## Phase 1 — in-house system (no IVAC dependency)
 - Applicant portal: registration, mobile/email verification, document upload

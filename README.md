@@ -3,7 +3,7 @@
 Visa application processing software for Indian visa applicants in Bangladesh: applicant portal, document OCR, admin dashboard, payment ledger and invoices. Not affiliated with IVAC or any government body.
 
 - **Live:** https://ivac.supersoftltd.com
-- **Status:** Phase 1, task 1 done: the project skeleton is live (Next.js web, FastAPI API, PostgreSQL, Redis). Plan: [docs/01-PHASE-1-PLAN.md](docs/01-PHASE-1-PLAN.md).
+- **Status:** Phase 1 — tasks 1–2 done: skeleton plus accounts (register, login, email verification, password reset, lockout, audit log). Plan: [docs/01-PHASE-1-PLAN.md](docs/01-PHASE-1-PLAN.md).
 - **Stack:** Next.js 16 + TypeScript + Tailwind CSS (pnpm), Python 3.12 FastAPI + SQLAlchemy 2 + Alembic, PostgreSQL 16, Redis 7, Docker Compose, Nginx.
 
 ## Layout

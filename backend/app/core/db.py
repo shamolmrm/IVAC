@@ -23,6 +23,11 @@ def utcnow() -> datetime:
     return datetime.now(UTC)
 
 
+def as_utc(dt: datetime) -> datetime:
+    """SQLite (tests) returns naive datetimes; treat them as UTC."""
+    return dt if dt.tzinfo else dt.replace(tzinfo=UTC)
+
+
 @lru_cache
 def get_engine() -> Engine:
     return create_engine(

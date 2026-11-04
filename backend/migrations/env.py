@@ -1,8 +1,7 @@
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-# Import each module's models here so Alembic sees them, e.g.:
-#   import app.modules.auth.models  # noqa: F401
+import app.models  # noqa: F401  (register every table)
 from app.core.config import get_settings
 from app.core.db import Base
 

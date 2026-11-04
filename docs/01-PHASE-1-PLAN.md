@@ -47,7 +47,7 @@ Shared VPS (4 vCPU / 7.8 GB, already hosting other apps). Phase 1 adds container
 
 ## Task list (one at a time, each: build → test → deploy)
 1. ✅ Monorepo skeleton: Next.js frontend, FastAPI backend, Postgres, Redis, Alembic, CI tests in deploy (2026-11-04)
-2. Auth: register/login, email verification, sessions
+2. ✅ Auth: register/login, email verification, password reset/change, sessions, account lockout, audit log (2026-11-04; email sending waits for SMTP settings)
 3. Mobile OTP verification (needs an SMS provider — decide)
 4. Organizations, staff invites and roles; tenant isolation tests
 5. Applicant profile + duplicate detection
