@@ -1,6 +1,6 @@
 # Master plan
 
-Status: **Phase 0 — infrastructure** (repo, subdomain, deploy pipeline, placeholder page).
+Status: **Phase 0 done (2026-11-04)** — infrastructure (repo, subdomain, deploy pipeline, placeholder page).
 
 ## Phase 1 — in-house system (no IVAC dependency)
 - Applicant portal: registration, mobile/email verification, document upload
