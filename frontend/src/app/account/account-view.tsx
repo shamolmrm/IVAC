@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Field, Notice } from "@/components/ui";
-import { api, ApiError, post, useSession } from "@/lib/api";
+import { api, ApiError, post, type User, useSession } from "@/lib/api";
 
 export function AccountView() {
-  const { user, loading } = useSession();
+  const { user, loading, setUser } = useSession();
   const router = useRouter();
   const welcome = useSearchParams().get("welcome") === "1";
 
@@ -44,10 +44,20 @@ export function AccountView() {
             </span>
           </dd>
           <dt className="text-muted">মোবাইল</dt>
-          <dd className="text-muted">শীঘ্রই যোগ করা যাবে</dd>
+          <dd>
+            {user.phone_verified && user.phone ? (
+              <>
+                {user.phone} <span className="text-emerald-600">✓ যাচাইকৃত</span>
+              </>
+            ) : (
+              <span className="text-amber-600">• যোগ করা হয়নি</span>
+            )}
+          </dd>
         </dl>
         {!user.email_verified && <VerifyPrompt />}
       </section>
+
+      {!user.phone_verified && <PhoneSection onVerified={setUser} />}
 
       <ChangePassword />
 
@@ -95,6 +105,92 @@ function VerifyPrompt() {
         <p className="text-muted">ইমেইল যাচাই সেবা শীঘ্রই চালু হবে।</p>
       )}
     </div>
+  );
+}
+
+function PhoneSection({ onVerified }: { onVerified: (u: User) => void }) {
+  const [smsOn, setSmsOn] = useState<boolean | null>(null);
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [msg, setMsg] = useState<{ tone: "success" | "error"; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    api<{ sms: boolean }>("/auth/features")
+      .then((f) => setSmsOn(f.sms))
+      .catch(() => setSmsOn(false));
+  }, []);
+
+  async function requestCode(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const phone = String(new FormData(e.currentTarget).get("phone")).trim();
+    setBusy(true);
+    setMsg(null);
+    try {
+      const r = await post<{ status: string; phone?: string }>("/auth/phone/request", { phone });
+      setSentTo(r.phone ?? phone);
+      setMsg({ tone: "success", text: "৬ সংখ্যার কোড SMS-এ পাঠানো হয়েছে। ৫ মিনিট বৈধ।" });
+    } catch (err) {
+      setMsg({ tone: "error", text: err instanceof ApiError ? err.message : "কোড পাঠানো যায়নি।" });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function verifyCode(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const code = String(new FormData(e.currentTarget).get("code")).trim();
+    setBusy(true);
+    setMsg(null);
+    try {
+      onVerified(await post<User>("/auth/phone/verify", { code }));
+    } catch (err) {
+      setMsg({ tone: "error", text: err instanceof ApiError ? err.message : "যাচাই করা যায়নি।" });
+      setBusy(false);
+    }
+  }
+
+  if (smsOn === null) return null;
+  return (
+    <section className="mb-6 rounded-2xl border border-line bg-bg-elevated p-6">
+      <h2 className="mb-4 font-semibold">মোবাইল নম্বর যাচাই</h2>
+      {msg && <Notice tone={msg.tone}>{msg.text}</Notice>}
+      {!smsOn ? (
+        <p className="text-sm text-muted">SMS যাচাই সেবা শীঘ্রই চালু হবে।</p>
+      ) : sentTo ? (
+        <form onSubmit={verifyCode}>
+          <Field
+            label={`${sentTo} নম্বরে পাঠানো কোড`}
+            name="code"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="\d{6}"
+            maxLength={6}
+            required
+          />
+          <Button type="submit" disabled={busy}>
+            {busy ? "যাচাই হচ্ছে…" : "যাচাই করুন"}
+          </Button>
+          <button type="button" onClick={() => setSentTo(null)} className="mt-3 w-full text-sm text-accent">
+            অন্য নম্বর দিন / আবার কোড চান
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={requestCode}>
+          <Field
+            label="মোবাইল নম্বর"
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            placeholder="01XXXXXXXXX"
+            required
+          />
+          <Button type="submit" disabled={busy}>
+            {busy ? "পাঠানো হচ্ছে…" : "কোড পাঠান"}
+          </Button>
+        </form>
+      )}
+    </section>
   );
 }
 

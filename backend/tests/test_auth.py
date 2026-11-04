@@ -125,7 +125,7 @@ def test_email_verification(client: TestClient, outbox: list) -> None:
 
 
 def test_email_features_off_without_smtp(client: TestClient) -> None:
-    assert client.get("/api/v1/auth/features").json() == {"email": False}
+    assert client.get("/api/v1/auth/features").json()["email"] is False
     register(client)
     assert client.post("/api/v1/auth/verify/request").status_code == 503
 

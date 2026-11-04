@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from app.core import mailer
+from app.core import mailer, sms
 from app.core.cache import KeyValueStore, get_redis, hit_rate_limit
 from app.core.config import get_settings
 from app.core.db import as_utc, get_db, utcnow
@@ -84,6 +84,7 @@ class UserOut(BaseModel):
 
 class FeaturesOut(BaseModel):
     email: bool
+    sms: bool
 
 
 def to_out(user: User) -> UserOut:
@@ -188,7 +189,7 @@ def send_verification(db: Session, user: User) -> None:
 
 @router.get("/features", response_model=FeaturesOut)
 def features() -> FeaturesOut:
-    return FeaturesOut(email=mailer.email_enabled())
+    return FeaturesOut(email=mailer.email_enabled(), sms=sms.sms_enabled())
 
 
 @router.post("/register", response_model=UserOut, status_code=201)

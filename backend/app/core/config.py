@@ -34,6 +34,15 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     mail_from: str = ""
 
+    # Outgoing SMS (mobile OTP). Disabled until a provider is configured; see app/core/sms.py.
+    sms_provider: str = ""
+    sms_api_key: str = ""
+    sms_sender_id: str = ""
+    otp_ttl_seconds: int = 5 * 60
+    otp_max_attempts: int = 5
+    otp_resend_seconds: int = 60
+    otp_per_hour: int = 5
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
