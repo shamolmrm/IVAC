@@ -14,7 +14,9 @@ Status: **Phase 0 done (2026-11-04)** — infrastructure (repo, subdomain, deplo
 Only after confirming: IVAC official automation permission/API, session validity, and the permitted payment channel.
 Form auto-fill and slot monitoring stay within permitted limits; OTP needs review; CAPTCHA is solved by a human.
 
-## Open questions
-1. Users: agency staff (B2B), applicants (B2C), or both?
-2. Indian visa only, or other countries later?
-3. Any official contact/permission with IVAC?
+## Decisions (2026-11-04)
+1. Users: both — agencies with staff (B2B) and individual applicants (B2C).
+2. Indian visa only for now.
+3. No IVAC permission → Phase 1 uses an assisted-manual flow.
+
+Details and task list: [01-PHASE-1-PLAN.md](01-PHASE-1-PLAN.md).
