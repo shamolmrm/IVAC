@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.v1 import api_router
-from app.core.config import get_settings
+from app.core.config import DEV_DATA_KEY, get_settings
 
 log = logging.getLogger("ivac")
 
@@ -14,6 +14,8 @@ UNSAFE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    if settings.is_production and settings.data_encryption_key == DEV_DATA_KEY:
+        raise RuntimeError("Set DATA_ENCRYPTION_KEY: the development key must not be used.")
     docs = not settings.is_production  # API docs are not public in production
     app = FastAPI(
         title=settings.app_name,

@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1 import health
+from app.modules.applicants.router import router as applicants_router
 from app.modules.auth.phone_router import router as phone_router
 from app.modules.auth.router import router as auth_router
 from app.modules.organizations.admin_router import router as org_admin_router
@@ -12,3 +13,4 @@ api_router.include_router(auth_router)
 api_router.include_router(phone_router)
 api_router.include_router(org_router)
 api_router.include_router(org_admin_router)
+api_router.include_router(applicants_router)

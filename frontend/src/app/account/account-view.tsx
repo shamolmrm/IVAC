@@ -62,6 +62,9 @@ export function AccountView() {
       <ChangePassword />
 
       <p className="mt-8 flex flex-wrap justify-center gap-4 text-sm">
+        <Link href="/applicants" className="text-accent">
+          আমার আবেদনকারী
+        </Link>
         <Link href="/agency" className="text-accent">
           এজেন্সি
         </Link>

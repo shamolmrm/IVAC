@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Card, PageShell } from "@/components/page-shell";
@@ -49,6 +50,14 @@ export function AgencyDetail() {
           <dt className="text-muted">ট্রেড লাইসেন্স</dt>
           <dd>{org.trade_license || "—"}</dd>
         </dl>
+        {org.status === "active" && (
+          <Link
+            href={`/agency/${org.id}/applicants`}
+            className="mt-5 inline-block rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white dark:text-black"
+          >
+            আবেদনকারী তালিকা →
+          </Link>
+        )}
         {org.status === "pending" && (
           <p className="mt-4 text-sm text-amber-600">
             এজেন্সিটি অনুমোদনের অপেক্ষায় আছে। অনুমোদনের পর staff আমন্ত্রণ জানাতে পারবেন।

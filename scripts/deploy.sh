@@ -34,6 +34,11 @@ ssh "$SERVER" "
     printf 'POSTGRES_PASSWORD=%s\nREDIS_PASSWORD=%s\n' \"\$(openssl rand -hex 24)\" \"\$(openssl rand -hex 24)\" > $REMOTE_DIR/.env
     echo '    created $REMOTE_DIR/.env with generated secrets'
   fi
+  # field-encryption key (passport / NID numbers): generated once, never printed, never rotated here
+  if ! grep -q '^DATA_ENCRYPTION_KEY=' $REMOTE_DIR/.env; then
+    printf 'DATA_ENCRYPTION_KEY=%s\n' \"\$(openssl rand -base64 32)\" >> $REMOTE_DIR/.env
+    echo '    added DATA_ENCRYPTION_KEY to .env — back it up offline (losing it = losing encrypted data)'
+  fi
   echo '==> Backend lint + tests'
   docker build --target test -q -t ivac-api-test $REMOTE_DIR/app.new/backend >/dev/null
   docker image rm ivac-api-test >/dev/null

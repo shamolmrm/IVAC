@@ -2,6 +2,8 @@ from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+DEV_DATA_KEY = "ZGV2ZWxvcG1lbnQta2V5LW5vdC1mb3ItcHJvZHVjdGk="  # public, development only
+
 
 class Settings(BaseSettings):
     """Application settings, read from environment variables / .env."""
@@ -42,6 +44,10 @@ class Settings(BaseSettings):
     otp_max_attempts: int = 5
     otp_resend_seconds: int = 60
     otp_per_hour: int = 5
+
+    # Field encryption (passport / NID numbers). 32 random bytes, base64. The default is a
+    # public development key; production refuses to start with it (see app.main).
+    data_encryption_key: str = DEV_DATA_KEY
 
     @property
     def is_production(self) -> bool:

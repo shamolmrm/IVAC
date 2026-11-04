@@ -13,6 +13,9 @@ export function PageShell({ title, children, actions }: { title: string; childre
           <Link href="/account" className="text-muted hover:text-fg">
             অ্যাকাউন্ট
           </Link>
+          <Link href="/applicants" className="text-muted hover:text-fg">
+            আবেদনকারী
+          </Link>
           <Link href="/agency" className="text-muted hover:text-fg">
             এজেন্সি
           </Link>

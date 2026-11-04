@@ -50,7 +50,7 @@ Shared VPS (4 vCPU / 7.8 GB, already hosting other apps). Phase 1 adds container
 2. ✅ Auth: register/login, email verification, password reset/change, sessions, account lockout, audit log (2026-11-04; email sending waits for SMTP settings)
 3. ✅ Mobile OTP verification: BD number check, hashed 6-digit codes, 5-min expiry, 5 attempts, resend throttle, one account per number (2026-11-04; sending waits for an SMS provider adapter)
 4. ✅ Organizations: agencies (pending → super admin approval), Owner/Manager/Agent roles, invite links, member management, built-in Direct org, tenant isolation (404 for non-members) + tests (2026-11-04)
-5. Applicant profile + duplicate detection
+5. ✅ Applicant profile: B2C (self + family) and agency applicants, passport/NID AES-256-GCM encrypted + blind index, duplicate passport blocked per scope, same name+DOB warning, cross-tenant duplicates only in the audit log, agent sees only assigned, assignment API, every view audited (2026-11-04)
 6. Encrypted document upload + checklist
 7. Passport MRZ OCR + validation
 8. BGD PDF extraction + cross-check with passport
@@ -74,3 +74,7 @@ Shared VPS (4 vCPU / 7.8 GB, already hosting other apps). Phase 1 adds container
 - bKash merchant/PGW account — before task 21
 - Service fee pricing per agency/applicant — before task 12
 - A real sample passport + BGD file (with consent) for OCR testing — before tasks 7–8
+
+## Operations notes
+- **DATA_ENCRYPTION_KEY** (in `/home/ubuntu/docker/websites/ivac/.env` on the VPS) encrypts passport and NID numbers. The nightly DB backup does NOT include it. Keep an offline copy (password manager); without it the encrypted fields cannot be recovered. Never change it without a re-encryption migration.
+- Super admin: `docker exec -it ivac-api python -m app.cli create-superadmin EMAIL "Name"`.
