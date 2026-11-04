@@ -40,6 +40,11 @@ export type Applicant = {
   occupation: string | null;
   visa_type: VisaType;
   notes: string | null;
+  bgd_application_id: string | null;
+  ivac_mission: string | null;
+  expected_journey_date: string | null;
+  port_of_arrival: string | null;
+  port_of_exit: string | null;
   assigned_to: string | null;
   created_by: string | null;
   created_at: string | null;

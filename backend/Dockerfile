@@ -7,9 +7,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 WORKDIR /app
-# Tesseract OCR (English model) for passport MRZ reading
+# Tesseract OCR (passport MRZ) and poppler pdftotext (BGD form PDFs)
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends tesseract-ocr fonts-dejavu-core \
+    && apt-get install -y --no-install-recommends tesseract-ocr poppler-utils fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 # MRZ (OCR-B) model, BSD-3, DoubangoTelecom/tesseractMRZ — pinned commit + checksum
 ADD --checksum=sha256:e44f5b7a6bdd3f382ef3bfa84ee0057f5897946a84a094c26910e0a124f3a9bd \

@@ -34,6 +34,10 @@ const TEXT = [
   "permanent_address",
   "occupation",
   "notes",
+  "bgd_application_id",
+  "ivac_mission",
+  "port_of_arrival",
+  "port_of_exit",
 ] as const;
 
 function Select({
@@ -88,7 +92,7 @@ export function ApplicantForm({ createPath, initial, onSaved }: Props) {
     const form = new FormData(e.currentTarget);
     const body: Record<string, string | null> = {};
     for (const k of TEXT) body[k] = String(form.get(k) ?? "").trim() || null;
-    for (const k of ["gender", "marital_status", "visa_type", "date_of_birth", "passport_issue_date", "passport_expiry_date"]) {
+    for (const k of ["gender", "marital_status", "visa_type", "date_of_birth", "passport_issue_date", "passport_expiry_date", "expected_journey_date"]) {
       body[k] = String(form.get(k) ?? "") || null;
     }
     body.nationality = initial?.nationality || "BGD";
@@ -143,6 +147,20 @@ export function ApplicantForm({ createPath, initial, onSaved }: Props) {
           autoComplete="off"
           hint="১০, ১৩ বা ১৭ সংখ্যা"
         />
+      </Group>
+      <Group title="অনলাইন আবেদন (BGD) ও ভ্রমণ">
+        <Field
+          label="BGD Application ID"
+          name="bgd_application_id"
+          defaultValue={v("bgd_application_id")}
+          maxLength={20}
+          autoComplete="off"
+          placeholder="BGD…"
+        />
+        <Field label="হাইকমিশন / মিশন" name="ivac_mission" defaultValue={v("ivac_mission")} maxLength={160} />
+        <Field label="সম্ভাব্য যাত্রার তারিখ" name="expected_journey_date" type="date" defaultValue={v("expected_journey_date")} />
+        <Field label="প্রবেশের পথ (Port of Arrival)" name="port_of_arrival" defaultValue={v("port_of_arrival")} maxLength={80} />
+        <Field label="বের হওয়ার পথ (Port of Exit)" name="port_of_exit" defaultValue={v("port_of_exit")} maxLength={80} />
       </Group>
       <Group title="যোগাযোগ ও অন্যান্য">
         <Field label="মোবাইল" name="phone" type="tel" defaultValue={v("phone")} placeholder="01XXXXXXXXX" maxLength={20} />

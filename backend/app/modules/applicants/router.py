@@ -26,6 +26,7 @@ member_active = org_access(OrgRole.agent, require_active=True)
 any_member = org_access(OrgRole.agent)
 MAX_DIRECT_APPLICANTS = 20  # an individual applies for self and family, not hundreds
 EMAIL = r"^$|^[^@\s]+@[^@\s]+\.[^@\s]+$"
+BGD_ID = r"^$|^[A-Za-z0-9]{6,20}$"
 ONLY_MANAGERS = "শুধু এজেন্সির Owner বা Manager দায়িত্ব ভাগ করতে পারেন।"
 
 
@@ -53,6 +54,11 @@ class ApplicantBase(BaseModel):
     occupation: str | None = Field(default=None, max_length=120)
     visa_type: VisaType
     notes: str | None = Field(default=None, max_length=4000)
+    bgd_application_id: str | None = Field(default=None, max_length=20, pattern=BGD_ID)
+    ivac_mission: str | None = Field(default=None, max_length=160)
+    expected_journey_date: date | None = None
+    port_of_arrival: str | None = Field(default=None, max_length=80)
+    port_of_exit: str | None = Field(default=None, max_length=80)
 
 
 class ApplicantIn(ApplicantBase):
@@ -85,6 +91,11 @@ class ApplicantUpdate(BaseModel):
     occupation: str | None = Field(default=None, max_length=120)
     visa_type: VisaType | None = None
     notes: str | None = Field(default=None, max_length=4000)
+    bgd_application_id: str | None = Field(default=None, max_length=20, pattern=BGD_ID)
+    ivac_mission: str | None = Field(default=None, max_length=160)
+    expected_journey_date: date | None = None
+    port_of_arrival: str | None = Field(default=None, max_length=80)
+    port_of_exit: str | None = Field(default=None, max_length=80)
 
 
 class ApplicantSummary(BaseModel):
@@ -156,7 +167,7 @@ def _apply(a: Applicant, data: dict) -> None:
             value = _clean(value)
             if key in ("surname", "given_name") and value:
                 value = str(value).upper()  # as printed in the passport
-            if key == "nationality" and value:
+            if key in ("nationality", "bgd_application_id") and value:
                 value = str(value).upper()
             setattr(a, key, value)
     if "phone" in data:

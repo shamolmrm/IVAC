@@ -53,7 +53,7 @@ Shared VPS (4 vCPU / 7.8 GB, already hosting other apps). Phase 1 adds container
 5. ✅ Applicant profile: B2C (self + family) and agency applicants, passport/NID AES-256-GCM encrypted + blind index, duplicate passport blocked per scope, same name+DOB warning, cross-tenant duplicates only in the audit log, agent sees only assigned, assignment API, every view audited (2026-11-04)
 6. ✅ Encrypted document upload: per-file AES-256-GCM on disk (bound to the record id), type checked from file bytes (JPG/PNG/PDF, 10 MB), checklist per visa type, audited downloads, delete removes the bytes (2026-11-04)
 7. ✅ Passport MRZ OCR: Tesseract in the API image, ICAO 9303 TD3 parser with check digits and look-alike repair, prefill from a photo (not stored), compare an uploaded passport with the profile and apply fixes; results never stored (2026-11-04)
-8. BGD PDF extraction + cross-check with passport
+8. ✅ BGD PDF extraction: poppler pdftotext (text layer, no OCR) + layout parser for ~30 fields (personal, passport, address, family, visa, journey, ports, mission); one-upload applicant creation that also files the PDF; cross-check BGD vs passport photo on the new page and BGD vs profile on uploaded forms. MRZ OCR upgraded to an MRZ-trained Tesseract model + adaptive banded thresholding for phone photos (2026-11-04)
 9. Application status workflow + timeline
 10. Ready-to-submit gate + copy-ready data sheet for IVAC entry
 11. IVAC result entry (appointment date, receipt upload)

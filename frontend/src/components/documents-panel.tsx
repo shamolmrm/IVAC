@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/page-shell";
 import { Notice } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
+import type { BgdData } from "@/lib/bgd";
 import { FIELD_LABEL, type Mismatch, type PassportData } from "@/lib/ocr";
 import { formatDate } from "@/lib/orgs";
 
@@ -39,8 +40,53 @@ type Data = { documents: Doc[]; checklist: Array<{ kind: DocKind; done: boolean 
 
 const kb = (n: number) => (n < 1024 * 1024 ? `${Math.ceil(n / 1024)} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`);
 
-function OcrCheck({ doc, applicantId, onApplied }: { doc: Doc; applicantId: string; onApplied?: () => void }) {
-  const [state, setState] = useState<{ passport: PassportData; mismatches: Mismatch[] } | null>(null);
+type CheckState = {
+  valid: boolean;
+  values: Record<string, unknown>;
+  mismatches: Array<{ field: string; profile: string | null; found: string | null }>;
+};
+
+const CHECKS = {
+  passport: {
+    button: "🔍 পাসপোর্টের তথ্য প্রোফাইলের সাথে মিলান (OCR)",
+    source: "পাসপোর্টে",
+    name: "পাসপোর্টের",
+    path: (id: string) => `/ocr/documents/${id}`,
+    normalise: (r: { passport: PassportData; mismatches: Mismatch[] }): CheckState => ({
+      valid: r.passport.valid,
+      values: r.passport,
+      mismatches: r.mismatches.map((m) => ({ field: m.field, profile: m.profile, found: m.passport })),
+    }),
+  },
+  bgd: {
+    button: "🔍 BGD-র তথ্য প্রোফাইলের সাথে মিলান",
+    source: "BGD-তে",
+    name: "BGD-র",
+    path: (id: string) => `/bgd/documents/${id}`,
+    normalise: (r: {
+      bgd: BgdData;
+      mismatches: Array<{ field: string; profile: string | null; document: string | null }>;
+    }): CheckState => ({
+      valid: true,
+      values: { ...r.bgd, bgd_application_id: r.bgd.application_id },
+      mismatches: r.mismatches.map((m) => ({ field: m.field, profile: m.profile, found: m.document })),
+    }),
+  },
+} as const;
+
+function DocCheck({
+  doc,
+  kind,
+  applicantId,
+  onApplied,
+}: {
+  doc: Doc;
+  kind: keyof typeof CHECKS;
+  applicantId: string;
+  onApplied?: () => void;
+}) {
+  const check = CHECKS[kind];
+  const [state, setState] = useState<CheckState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -48,7 +94,8 @@ function OcrCheck({ doc, applicantId, onApplied }: { doc: Doc; applicantId: stri
     setBusy(true);
     setError(null);
     try {
-      setState(await api(`/ocr/documents/${doc.id}`, { method: "POST" }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setState(check.normalise(await api<any>(check.path(doc.id), { method: "POST" })));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "পড়া যায়নি।");
     } finally {
@@ -60,7 +107,7 @@ function OcrCheck({ doc, applicantId, onApplied }: { doc: Doc; applicantId: stri
     if (!state) return;
     const body: Record<string, string> = {};
     for (const m of state.mismatches) {
-      const value = state.passport[m.field as keyof PassportData];
+      const value = state.values[m.field];
       if (typeof value === "string" && value) body[m.field] = value;
     }
     setBusy(true);
@@ -77,17 +124,17 @@ function OcrCheck({ doc, applicantId, onApplied }: { doc: Doc; applicantId: stri
     <div className="mt-2 w-full rounded-lg bg-bg-sunken p-3 text-xs">
       {!state && (
         <button onClick={run} disabled={busy} className="font-medium text-accent disabled:opacity-60">
-          {busy ? "পড়া হচ্ছে…" : "🔍 পাসপোর্টের তথ্য প্রোফাইলের সাথে মিলান (OCR)"}
+          {busy ? "পড়া হচ্ছে…" : check.button}
         </button>
       )}
       {error && <p className="mt-1 text-red-600">{error}</p>}
       {state && (
         <>
-          {!state.passport.valid && (
+          {!state.valid && (
             <p className="mb-2 text-amber-600">⚠ কিছু অংশের check digit মেলেনি: OCR ভুল পড়তে পারে, নিজে মিলিয়ে নিন।</p>
           )}
           {state.mismatches.length === 0 ? (
-            <p className="text-emerald-600">✓ পাসপোর্ট ও প্রোফাইলের সব তথ্য মিলেছে।</p>
+            <p className="text-emerald-600">✓ {check.name} সব তথ্য প্রোফাইলের সাথে মিলেছে।</p>
           ) : (
             <>
               <p className="mb-2 font-medium text-amber-600">{state.mismatches.length}টি অমিল পাওয়া গেছে:</p>
@@ -96,7 +143,7 @@ function OcrCheck({ doc, applicantId, onApplied }: { doc: Doc; applicantId: stri
                   <tr>
                     <th className="pr-2 text-left font-normal">ঘর</th>
                     <th className="pr-2 text-left font-normal">প্রোফাইলে</th>
-                    <th className="text-left font-normal">পাসপোর্টে</th>
+                    <th className="text-left font-normal">{check.source}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -104,13 +151,13 @@ function OcrCheck({ doc, applicantId, onApplied }: { doc: Doc; applicantId: stri
                     <tr key={m.field}>
                       <td className="pr-2">{FIELD_LABEL[m.field] ?? m.field}</td>
                       <td className="pr-2 font-mono">{m.profile ?? "—"}</td>
-                      <td className="font-mono">{m.passport ?? "—"}</td>
+                      <td className="font-mono">{m.found ?? "—"}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               <button onClick={apply} disabled={busy} className="font-medium text-accent disabled:opacity-60">
-                পাসপোর্টের তথ্য প্রোফাইলে বসান
+                {check.name} তথ্য প্রোফাইলে বসান
               </button>
             </>
           )}
@@ -274,7 +321,10 @@ export function DocumentsPanel({ applicantId, onProfileChanged }: { applicantId:
                 </button>
               </div>
               {d.kind === "passport_bio" && d.content_type !== "application/pdf" && (
-                <OcrCheck doc={d} applicantId={applicantId} onApplied={onProfileChanged} />
+                <DocCheck doc={d} kind="passport" applicantId={applicantId} onApplied={onProfileChanged} />
+              )}
+              {d.kind === "bgd_form" && d.content_type === "application/pdf" && (
+                <DocCheck doc={d} kind="bgd" applicantId={applicantId} onApplied={onProfileChanged} />
               )}
             </li>
           ))}

@@ -103,4 +103,11 @@ class Applicant(TimestampMixin, Base):
     visa_type: Mapped[VisaType] = mapped_column(_enum(VisaType, "visa_type"))
     notes: Mapped[str | None] = mapped_column(Text)
 
+    # From the online application form (BGD…): needed when booking the appointment
+    bgd_application_id: Mapped[str | None] = mapped_column(String(20), index=True)
+    ivac_mission: Mapped[str | None] = mapped_column(String(160))
+    expected_journey_date: Mapped[date | None] = mapped_column(Date)
+    port_of_arrival: Mapped[str | None] = mapped_column(String(80))
+    port_of_exit: Mapped[str | None] = mapped_column(String(80))
+
     archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

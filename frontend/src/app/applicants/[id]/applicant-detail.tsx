@@ -125,6 +125,19 @@ export function ApplicantDetail() {
               <Row label="ভিসার ধরন" value={VISA_LABEL[a.visa_type]} />
             </dl>
           </Card>
+          <Card>
+            <h2 className="mb-4 font-semibold">অনলাইন আবেদন (BGD) ও ভ্রমণ</h2>
+            <dl className="grid gap-3 text-sm sm:grid-cols-[11rem_1fr]">
+              <Row
+                label="BGD Application ID"
+                value={a.bgd_application_id && <span className="font-mono">{a.bgd_application_id}</span>}
+              />
+              <Row label="হাইকমিশন / মিশন" value={a.ivac_mission} />
+              <Row label="সম্ভাব্য যাত্রা" value={a.expected_journey_date && formatDate(a.expected_journey_date)} />
+              <Row label="Port of Arrival" value={a.port_of_arrival} />
+              <Row label="Port of Exit" value={a.port_of_exit} />
+            </dl>
+          </Card>
           <DocumentsPanel
             applicantId={a.id}
             onProfileChanged={() => {

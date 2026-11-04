@@ -23,6 +23,21 @@ export const FIELD_LABEL: Record<string, string> = {
   passport_expiry_date: "মেয়াদ শেষ",
   gender: "লিঙ্গ",
   nationality: "জাতীয়তা",
+  place_of_birth: "জন্মস্থান",
+  marital_status: "বৈবাহিক অবস্থা",
+  father_name: "পিতার নাম",
+  mother_name: "মাতার নাম",
+  spouse_name: "স্বামী/স্ত্রীর নাম",
+  passport_issue_date: "ইস্যুর তারিখ",
+  passport_issue_place: "ইস্যুর স্থান",
+  nid_number: "NID",
+  email: "ইমেইল",
+  visa_type: "ভিসার ধরন",
+  bgd_application_id: "BGD Application ID",
+  ivac_mission: "হাইকমিশন",
+  expected_journey_date: "যাত্রার তারিখ",
+  port_of_arrival: "Port of Arrival",
+  port_of_exit: "Port of Exit",
 };
 
 /** POST a file as multipart and return JSON, with the API's error message on failure. */
