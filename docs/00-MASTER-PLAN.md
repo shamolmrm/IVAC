@@ -1,6 +1,6 @@
 # Master plan
 
-Status: **Phase 1 in progress.** Phase 0 (infrastructure) done 2026-11-04; Phase 1 tasks 1–6 (skeleton, auth, mobile OTP, agencies + roles, applicant profiles, encrypted documents) done 2026-11-04; public home page live.
+Status: **Phase 1 in progress.** Phase 0 (infrastructure) done 2026-11-04; Phase 1 tasks 1–7 (skeleton, auth, mobile OTP, agencies + roles, applicant profiles, encrypted documents, passport OCR) done 2026-11-04; public home page live.
 
 ## Phase 1 — in-house system (no IVAC dependency)
 - Applicant portal: registration, mobile/email verification, document upload

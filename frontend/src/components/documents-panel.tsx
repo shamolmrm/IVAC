@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/page-shell";
 import { Notice } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
+import { FIELD_LABEL, type Mismatch, type PassportData } from "@/lib/ocr";
 import { formatDate } from "@/lib/orgs";
 
 export type DocKind =
@@ -38,7 +39,88 @@ type Data = { documents: Doc[]; checklist: Array<{ kind: DocKind; done: boolean 
 
 const kb = (n: number) => (n < 1024 * 1024 ? `${Math.ceil(n / 1024)} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`);
 
-export function DocumentsPanel({ applicantId }: { applicantId: string }) {
+function OcrCheck({ doc, applicantId, onApplied }: { doc: Doc; applicantId: string; onApplied?: () => void }) {
+  const [state, setState] = useState<{ passport: PassportData; mismatches: Mismatch[] } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function run() {
+    setBusy(true);
+    setError(null);
+    try {
+      setState(await api(`/ocr/documents/${doc.id}`, { method: "POST" }));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "পড়া যায়নি।");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function apply() {
+    if (!state) return;
+    const body: Record<string, string> = {};
+    for (const m of state.mismatches) {
+      const value = state.passport[m.field as keyof PassportData];
+      if (typeof value === "string" && value) body[m.field] = value;
+    }
+    setBusy(true);
+    try {
+      await api(`/applicants/${applicantId}`, { method: "PATCH", body: JSON.stringify(body) });
+      onApplied?.();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "প্রোফাইল আপডেট করা যায়নি।");
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-2 w-full rounded-lg bg-bg-sunken p-3 text-xs">
+      {!state && (
+        <button onClick={run} disabled={busy} className="font-medium text-accent disabled:opacity-60">
+          {busy ? "পড়া হচ্ছে…" : "🔍 পাসপোর্টের তথ্য প্রোফাইলের সাথে মিলান (OCR)"}
+        </button>
+      )}
+      {error && <p className="mt-1 text-red-600">{error}</p>}
+      {state && (
+        <>
+          {!state.passport.valid && (
+            <p className="mb-2 text-amber-600">⚠ কিছু অংশের check digit মেলেনি: OCR ভুল পড়তে পারে, নিজে মিলিয়ে নিন।</p>
+          )}
+          {state.mismatches.length === 0 ? (
+            <p className="text-emerald-600">✓ পাসপোর্ট ও প্রোফাইলের সব তথ্য মিলেছে।</p>
+          ) : (
+            <>
+              <p className="mb-2 font-medium text-amber-600">{state.mismatches.length}টি অমিল পাওয়া গেছে:</p>
+              <table className="mb-2 w-full">
+                <thead className="text-muted">
+                  <tr>
+                    <th className="pr-2 text-left font-normal">ঘর</th>
+                    <th className="pr-2 text-left font-normal">প্রোফাইলে</th>
+                    <th className="text-left font-normal">পাসপোর্টে</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {state.mismatches.map((m) => (
+                    <tr key={m.field}>
+                      <td className="pr-2">{FIELD_LABEL[m.field] ?? m.field}</td>
+                      <td className="pr-2 font-mono">{m.profile ?? "—"}</td>
+                      <td className="font-mono">{m.passport ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <button onClick={apply} disabled={busy} className="font-medium text-accent disabled:opacity-60">
+                পাসপোর্টের তথ্য প্রোফাইলে বসান
+              </button>
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+export function DocumentsPanel({ applicantId, onProfileChanged }: { applicantId: string; onProfileChanged?: () => void }) {
   const [data, setData] = useState<Data | null>(null);
   const [msg, setMsg] = useState<{ tone: "success" | "error"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -191,6 +273,9 @@ export function DocumentsPanel({ applicantId }: { applicantId: string }) {
                   মুছুন
                 </button>
               </div>
+              {d.kind === "passport_bio" && d.content_type !== "application/pdf" && (
+                <OcrCheck doc={d} applicantId={applicantId} onApplied={onProfileChanged} />
+              )}
             </li>
           ))}
         </ul>

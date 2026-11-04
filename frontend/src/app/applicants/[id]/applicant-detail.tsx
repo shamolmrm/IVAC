@@ -125,7 +125,16 @@ export function ApplicantDetail() {
               <Row label="ভিসার ধরন" value={VISA_LABEL[a.visa_type]} />
             </dl>
           </Card>
-          <DocumentsPanel applicantId={a.id} />
+          <DocumentsPanel
+            applicantId={a.id}
+            onProfileChanged={() => {
+              api<Applicant>(`/applicants/${a.id}`).then((fresh) => {
+                setA(fresh);
+                setSaved(true);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              });
+            }}
+          />
           <Card>
             <h2 className="mb-4 font-semibold">ব্যক্তিগত তথ্য</h2>
             <dl className="grid gap-3 text-sm sm:grid-cols-[11rem_1fr]">

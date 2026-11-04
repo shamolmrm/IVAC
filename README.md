@@ -3,7 +3,7 @@
 Visa application processing software for Indian visa applicants in Bangladesh: applicant portal, document OCR, admin dashboard, payment ledger and invoices. Not affiliated with IVAC or any government body.
 
 - **Live:** https://ivac.supersoftltd.com
-- **Status:** Phase 1 — tasks 1–6 done: home page, skeleton, accounts (register, login, email verification, password reset, lockout, audit log), mobile OTP verification,, agencies with Owner/Manager/Agent roles, staff invites, tenant isolation,, applicant profiles with encrypted passport/NID numbers and duplicate detection, and encrypted document upload with a per-visa checklist. Email and SMS sending switch on once SMTP and an SMS provider are configured. Plan: [docs/01-PHASE-1-PLAN.md](docs/01-PHASE-1-PLAN.md).
+- **Status:** Phase 1 — tasks 1–7 done: home page, skeleton, accounts (register, login, email verification, password reset, lockout, audit log), mobile OTP verification,, agencies with Owner/Manager/Agent roles, staff invites, tenant isolation,, applicant profiles with encrypted passport/NID numbers and duplicate detection, encrypted document upload with a per-visa checklist, and passport MRZ OCR (prefill + profile check). Email and SMS sending switch on once SMTP and an SMS provider are configured. Plan: [docs/01-PHASE-1-PLAN.md](docs/01-PHASE-1-PLAN.md).
 - **Stack:** Next.js 16 + TypeScript + Tailwind CSS (pnpm), Python 3.12 FastAPI + SQLAlchemy 2 + Alembic, PostgreSQL 16, Redis 7, Docker Compose, Nginx.
 
 ## Layout

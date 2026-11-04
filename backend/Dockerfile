@@ -7,6 +7,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 WORKDIR /app
+# Tesseract OCR (English model) for passport MRZ reading
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tesseract-ocr fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
 RUN pip install --upgrade "pip>=26.2"
 COPY pyproject.toml ./
 COPY app ./app

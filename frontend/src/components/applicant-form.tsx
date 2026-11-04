@@ -91,7 +91,7 @@ export function ApplicantForm({ createPath, initial, onSaved }: Props) {
     for (const k of ["gender", "marital_status", "visa_type", "date_of_birth", "passport_issue_date", "passport_expiry_date"]) {
       body[k] = String(form.get(k) ?? "") || null;
     }
-    body.nationality = "BGD";
+    body.nationality = initial?.nationality || "BGD";
     setBusy(true);
     setError(null);
     try {
