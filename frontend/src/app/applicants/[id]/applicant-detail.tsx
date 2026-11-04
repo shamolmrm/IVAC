@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ApplicantForm } from "@/components/applicant-form";
+import { DocumentsPanel } from "@/components/documents-panel";
 import { Card, PageShell } from "@/components/page-shell";
 import { Notice } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
@@ -124,6 +125,7 @@ export function ApplicantDetail() {
               <Row label="ভিসার ধরন" value={VISA_LABEL[a.visa_type]} />
             </dl>
           </Card>
+          <DocumentsPanel applicantId={a.id} />
           <Card>
             <h2 className="mb-4 font-semibold">ব্যক্তিগত তথ্য</h2>
             <dl className="grid gap-3 text-sm sm:grid-cols-[11rem_1fr]">

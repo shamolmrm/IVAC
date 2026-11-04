@@ -49,6 +49,10 @@ class Settings(BaseSettings):
     # public development key; production refuses to start with it (see app.main).
     data_encryption_key: str = DEV_DATA_KEY
 
+    # Uploaded documents (encrypted files). A Docker bind mount in production.
+    documents_dir: str = "./data/documents"
+    document_max_bytes: int = 10 * 1024 * 1024
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"

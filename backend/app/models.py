@@ -3,4 +3,5 @@
 import app.modules.applicants.models  # noqa: F401
 import app.modules.audit.models  # noqa: F401
 import app.modules.auth.models  # noqa: F401
+import app.modules.documents.models  # noqa: F401
 import app.modules.organizations.models  # noqa: F401

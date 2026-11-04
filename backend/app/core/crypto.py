@@ -44,5 +44,23 @@ def decrypt(token: str) -> str:
     return AESGCM(_keys()[0]).decrypt(blob[:12], blob[12:], None).decode()
 
 
+@lru_cache
+def _file_key() -> bytes:
+    raw = base64.b64decode(get_settings().data_encryption_key)
+    return hmac.new(raw, b"ivac/files/v1", hashlib.sha256).digest()
+
+
+def encrypt_bytes(data: bytes, aad: bytes) -> bytes:
+    """Encrypt a whole file. `aad` (e.g. the document id) binds the ciphertext to its record."""
+    nonce = os.urandom(12)
+    return b"IVF1" + nonce + AESGCM(_file_key()).encrypt(nonce, data, aad)
+
+
+def decrypt_bytes(blob: bytes, aad: bytes) -> bytes:
+    if blob[:4] != b"IVF1":
+        raise ValueError("unknown file format")
+    return AESGCM(_file_key()).decrypt(blob[4:16], blob[16:], aad)
+
+
 def blind_index(value: str) -> str:
     return hmac.new(_keys()[1], value.encode(), hashlib.sha256).hexdigest()

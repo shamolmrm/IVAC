@@ -51,7 +51,7 @@ Shared VPS (4 vCPU / 7.8 GB, already hosting other apps). Phase 1 adds container
 3. ✅ Mobile OTP verification: BD number check, hashed 6-digit codes, 5-min expiry, 5 attempts, resend throttle, one account per number (2026-11-04; sending waits for an SMS provider adapter)
 4. ✅ Organizations: agencies (pending → super admin approval), Owner/Manager/Agent roles, invite links, member management, built-in Direct org, tenant isolation (404 for non-members) + tests (2026-11-04)
 5. ✅ Applicant profile: B2C (self + family) and agency applicants, passport/NID AES-256-GCM encrypted + blind index, duplicate passport blocked per scope, same name+DOB warning, cross-tenant duplicates only in the audit log, agent sees only assigned, assignment API, every view audited (2026-11-04)
-6. Encrypted document upload + checklist
+6. ✅ Encrypted document upload: per-file AES-256-GCM on disk (bound to the record id), type checked from file bytes (JPG/PNG/PDF, 10 MB), checklist per visa type, audited downloads, delete removes the bytes (2026-11-04)
 7. Passport MRZ OCR + validation
 8. BGD PDF extraction + cross-check with passport
 9. Application status workflow + timeline
@@ -76,5 +76,5 @@ Shared VPS (4 vCPU / 7.8 GB, already hosting other apps). Phase 1 adds container
 - A real sample passport + BGD file (with consent) for OCR testing — before tasks 7–8
 
 ## Operations notes
-- **DATA_ENCRYPTION_KEY** (in `/home/ubuntu/docker/websites/ivac/.env` on the VPS) encrypts passport and NID numbers. The nightly DB backup does NOT include it. Keep an offline copy (password manager); without it the encrypted fields cannot be recovered. Never change it without a re-encryption migration.
+- **DATA_ENCRYPTION_KEY** (in `/home/ubuntu/docker/websites/ivac/.env` on the VPS) encrypts passport and NID numbers and every uploaded document (`data/documents`, mirrored nightly to `/home/ubuntu/backups/ivac/data`). The nightly DB backup does NOT include it. Keep an offline copy (password manager); without it the encrypted fields cannot be recovered. Never change it without a re-encryption migration.
 - Super admin: `docker exec -it ivac-api python -m app.cli create-superadmin EMAIL "Name"`.
