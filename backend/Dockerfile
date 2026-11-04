@@ -11,6 +11,11 @@ WORKDIR /app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends tesseract-ocr fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
+# MRZ (OCR-B) model, BSD-3, DoubangoTelecom/tesseractMRZ — pinned commit + checksum
+ADD --checksum=sha256:e44f5b7a6bdd3f382ef3bfa84ee0057f5897946a84a094c26910e0a124f3a9bd \
+    https://raw.githubusercontent.com/DoubangoTelecom/tesseractMRZ/1e7adfecda5f3c9ae1fb12cf6b4b8c3958c63e46/tessdata_best/mrz.traineddata \
+    /usr/local/share/tessdata-mrz/mrz.traineddata
+RUN chmod 644 /usr/local/share/tessdata-mrz/mrz.traineddata
 RUN pip install --upgrade "pip>=26.2"
 COPY pyproject.toml ./
 COPY app ./app

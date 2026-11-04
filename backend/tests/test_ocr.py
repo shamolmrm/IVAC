@@ -144,3 +144,17 @@ def test_ocr_requires_access(me: TestClient, fake_ocr: None) -> None:
     other = {"email": "x@example.com", "password": PASSWORD, "full_name": "Other User"}
     assert me.post("/api/v1/auth/register", json=other).status_code == 201
     assert me.post(f"/api/v1/ocr/documents/{doc['id']}").status_code == 404
+
+
+def test_bands_cover_the_whole_image_bottom_first() -> None:
+    from PIL import Image
+
+    img = Image.new("L", (100, 1000))
+    boxes = [b.size for b in engine._bands(img)]
+    assert boxes[0] == (100, 300)  # bottom band first
+    assert len(boxes) >= 6  # overlapping by half, up to the top
+
+
+@pytest.mark.skipif(not engine.available(), reason="tesseract not installed")
+def test_mrz_model_is_bundled_in_the_image() -> None:
+    assert engine.has_mrz_model()
