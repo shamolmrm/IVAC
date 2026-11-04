@@ -9,10 +9,10 @@ export const NAV = [
   { href: "/#faq", label: "প্রশ্নোত্তর" },
 ];
 
-export function Logo() {
+export function Logo({ size = "md" }: { size?: "md" | "lg" }) {
   return (
     <Link href="/" className="flex items-center gap-2 font-semibold">
-      <svg viewBox="0 0 32 32" className="h-8 w-8" aria-hidden="true">
+      <svg viewBox="0 0 32 32" className={size === "lg" ? "h-11 w-11" : "h-8 w-8"} aria-hidden="true">
         <rect width="32" height="32" rx="8" className="fill-accent" />
         <path d="M9 8h10a4 4 0 0 1 4 4v12H13a4 4 0 0 1-4-4z" fill="none" stroke="white" strokeWidth="2" />
         <circle cx="16" cy="15" r="3.2" fill="none" stroke="white" strokeWidth="1.8" />

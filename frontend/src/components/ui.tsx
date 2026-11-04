@@ -1,12 +1,13 @@
-import Link from "next/link";
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from "react";
+import { PasswordInput } from "@/components/password-input";
+import { Logo } from "@/components/site-header";
 
 export function AuthShell({ title, children, footer }: { title: string; children: ReactNode; footer?: ReactNode }) {
   return (
     <main className="mx-auto w-full max-w-md px-4 py-12 sm:py-20">
-      <Link href="/" className="mb-6 block text-center text-sm font-semibold text-accent">
-        Visa Assistant
-      </Link>
+      <div className="mb-8 flex justify-center text-xl">
+        <Logo size="lg" />
+      </div>
       <div className="rounded-2xl border border-line bg-bg-elevated p-6 sm:p-8">
         <h1 className="mb-6 text-xl font-semibold">{title}</h1>
         {children}
@@ -16,14 +17,14 @@ export function AuthShell({ title, children, footer }: { title: string; children
   );
 }
 
+const INPUT =
+  "w-full rounded-lg border border-line bg-bg px-3 py-2 outline-none focus:border-accent focus:ring-2 focus:ring-accent/20";
+
 export function Field({ label, hint, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string }) {
   return (
     <label className="mb-4 block">
       <span className="mb-1 block text-sm font-medium">{label}</span>
-      <input
-        {...props}
-        className="w-full rounded-lg border border-line bg-bg px-3 py-2 outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
-      />
+      {props.type === "password" ? <PasswordInput {...props} className={INPUT} /> : <input {...props} className={INPUT} />}
       {hint && <span className="mt-1 block text-xs text-muted">{hint}</span>}
     </label>
   );
